@@ -16,9 +16,9 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>10</x>
      <y>440</y>
-     <width>601</width>
+     <width>631</width>
      <height>32</height>
     </rect>
    </property>
@@ -74,7 +74,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Verbose output</string>
+     <string>Verbose Output</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="print_statistics_checkbox">
@@ -87,7 +87,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Print statistics</string>
+     <string>Print Statistics</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -131,17 +131,30 @@
    <property name="title">
     <string>Calculation</string>
    </property>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="class_stat_btn">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>111</width>
+      <width>161</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Class statistics</string>
+     <string>Raster Pixel Statistics</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="obj_stat_btn">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>30</y>
+      <width>161</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Raster Object Statistics</string>
     </property>
    </widget>
   </widget>

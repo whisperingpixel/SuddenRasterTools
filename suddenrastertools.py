@@ -180,6 +180,18 @@ class SuddenRasterTools:
         del self.toolbar
 
 
+    def make_temp_directory(self):
+        import os
+        
+        t_path = "C:\Windows\Temp\SuddenRasterTools"
+        
+        if not os.path.exists(t_path):
+            os.makedirs(t_path)
+            return "Created temp directory in: " + t_path + "\n"
+        else:
+            return "Temp directory in " + t_path + " already exists\n"
+        
+            
     def dataset_statistics(self, dataset_path):
         
         from os import path
@@ -258,8 +270,8 @@ class SuddenRasterTools:
                 categories_count[idx] += 1
 
 
-		total_cells = band.YSize * band.XSize
-		
+        total_cells = band.YSize * band.XSize
+        
         for i, cat in enumerate(categories_value):
             count_value = cat
             count_cat = categories_count[i]
@@ -269,8 +281,47 @@ class SuddenRasterTools:
         outputtext +=  "total > %d \n" % (total_cells)
         dataset = None        
         self.dlg.plainTextEdit.appendPlainText(outputtext)
+
+
+    def raster_polygonise(self, layer, print_statistics, verbose):
+
+        from os import path
+        import struct
+        from osgeo import gdal
+        from qgis.core import *
+        from qgis.utils import *
+        from processing.tools import *
+        
+        outputtext = ""
+        
+        layerList = QgsMapLayerRegistry.instance().mapLayersByName(layer)
+        if layerList: 
+            layer = layerList[0]
+        else:
+            return
             
-            
+        layer = iface.activeLayer()
+        
+        if print_statistics == True:
+            outputtext += self.dataset_statistics(dataset_path)
+
+        #
+        # Make temp directory
+        #
+        tmp_text = self.make_temp_directory()
+        
+        if verbose == True:
+            outputtext += tmp_text
+            outputtext += "run algorithm\n"
+
+        general.runandload('gdalogr:polygonize', layer, "DN", "C:\Windows\Temp\SuddenRasterTools\Polygonize")
+        
+        if verbose == True:
+            outputtext += "finished algorithm\n"
+        
+        self.dlg.plainTextEdit.appendPlainText(outputtext)
+        
+        
     def run(self):
         """Run method that performs all the real work"""
         
@@ -291,7 +342,7 @@ class SuddenRasterTools:
         #
         # This is the wrapper that is called on click
         #
-        def wrapper():
+        def class_stat_wrapper():
             #
             # Get currently activated layer
             #
@@ -300,10 +351,20 @@ class SuddenRasterTools:
             verbose_calculation_checked = self.dlg.verbose_calculation_checkbox.isChecked() # returns True if checked
             self.raster_category_variables(layer, print_statistics_checked, verbose_calculation_checked)
         
+        def obj_stat_wrapper():
+            #
+            # Get currently activated layer
+            #
+            layer = str(self.dlg.comboBox.currentText())
+            print_statistics_checked = self.dlg.print_statistics_checkbox.isChecked() # returns True if checked
+            verbose_calculation_checked = self.dlg.verbose_calculation_checkbox.isChecked() # returns True if checked
+            self.raster_polygonise(layer, print_statistics_checked, verbose_calculation_checked)
+            
         #
         # This is the button that triggers the calculation
         #
-        self.dlg.pushButton.clicked.connect(wrapper)
+        self.dlg.class_stat_btn.clicked.connect(class_stat_wrapper)
+        self.dlg.obj_stat_btn.clicked.connect(obj_stat_wrapper)
         
         
         #         
