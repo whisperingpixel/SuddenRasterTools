@@ -178,7 +178,7 @@ class SuddenRasterTools:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
-
+<
 
     def make_temp_directory(self):
         import os
