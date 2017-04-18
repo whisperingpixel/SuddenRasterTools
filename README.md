@@ -18,3 +18,4 @@ Select a categorical raster file. The button "Pixel Class Statistics" calculates
 # Development
 
 This plugin is constantly under development. The first aim is to provide a working environment for the promises I made in "Usage".
+
