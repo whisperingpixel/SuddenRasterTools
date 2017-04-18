@@ -178,7 +178,7 @@ class SuddenRasterTools:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
-<
+
 
     def make_temp_directory(self):
         import os
@@ -191,7 +191,10 @@ class SuddenRasterTools:
         else:
             return "Temp directory in " + t_path + " already exists\n"
         
-            
+    def clean_temp_directory(self):
+         import shutil
+         shutil.rmtree('C:\Windows\Temp\SuddenRasterTools')
+         
     def dataset_statistics(self, dataset_path):
         
         from os import path
@@ -282,8 +285,64 @@ class SuddenRasterTools:
         dataset = None        
         self.dlg.plainTextEdit.appendPlainText(outputtext)
 
+    def object_information(self, layer, verbose):
+        
+        #
+        # This is where the result goes to (as text)
+        #
+        result_as_text = ""
+        
+        #
+        # This is where the statistics go to
+        #
+        categories_value = []
+        categories_count = []
+        total_count = 0
+        
+        #
+        # Iterate over all features
+        #
+        for feature in layer.getFeatures():
+            
+            #
+            # At first check whether the category is already in the array.
+            # If not, append it and append a zero to the count-array
+            #
+            
+            category = feature.attributes()[0]
+            if category not in categories_value:
+                categories_value.append(category)
+                categories_count.append(0)
+            
+            #
+            # Get the index of the current category
+            #
+            idx = categories_value.index(category)
+            
+            #
+            # increment the count-array
+            #
+            categories_count[idx] += 1
+            
+            #
+            # increment total_count
+            #
+            total_count += 1
+        
+        #
+        # Iteratie over the result in order to print it
+        #
+        for i, count_value in enumerate(categories_value):
+            count_cat = categories_count[i]
+            count_cat_perc = (float(count_cat) / float(total_count)) * float(100)
+            result_as_text +=  "%d > %d | %.2f \n" % (count_value, count_cat, count_cat_perc)
 
-    def raster_polygonise(self, layer, print_statistics, verbose):
+        result_as_text +=  "total > %d \n" % (total_count)
+      
+        return result_as_text
+
+
+    def raster_polygonise(self, layer, print_statistics, verbose, keep_result):
 
         from os import path
         import struct
@@ -294,31 +353,63 @@ class SuddenRasterTools:
         
         outputtext = ""
         
+        #
+        # Get the layer which was specified by the user
+        #
         layerList = QgsMapLayerRegistry.instance().mapLayersByName(layer)
-        if layerList: 
-            layer = layerList[0]
-        else:
-            return
+        if layerList:
             
-        layer = iface.activeLayer()
-        
-        if print_statistics == True:
-            outputtext += self.dataset_statistics(dataset_path)
+            layer = layerList[0]
+            provider = layer.dataProvider()
+            dataset_path = provider.dataSourceUri()
+            
+            #
+            # If the user has decided to print statistics, call this function at first.
+            # Note: it does some double work that could be avoided
+            #
+            if print_statistics == True:
+                outputtext += self.dataset_statistics(dataset_path)
 
-        #
-        # Make temp directory
-        #
-        tmp_text = self.make_temp_directory()
-        
-        if verbose == True:
-            outputtext += tmp_text
-            outputtext += "run algorithm\n"
+            #
+            # Create temp directory
+            #
+            tmp_text = self.make_temp_directory()
+            
+            if verbose == True:
+                outputtext += tmp_text
+                outputtext += "run algorithm\n"
 
-        general.runandload('gdalogr:polygonize', layer, "DN", "C:\Windows\Temp\SuddenRasterTools\Polygonize")
-        
-        if verbose == True:
-            outputtext += "finished algorithm\n"
-        
+            general.runandload('gdalogr:polygonize', layer, "DN", "C:\Windows\Temp\SuddenRasterTools\Polygonize")
+            
+            if verbose == True:
+                outputtext += "finished algorithm\n"
+            
+            #
+            # Get the layer that has been generated
+            #
+            layerList = QgsMapLayerRegistry.instance().mapLayersByName("Vectorized")
+            layer = layerList[0]
+            layerid = layer.id()
+            if len(layerList) > 0:
+                outputtext += self.object_information(layer, verbose)
+            else:
+                outputtext += "Something went wrong: Could not find layer"   
+            
+            if keep_result == False:
+                #
+                # Remove the output layer as we do not need it any more
+                #
+                QgsMapLayerRegistry.instance().removeMapLayers( [layerid] )
+                
+                #
+                # Clean temp directory
+                #
+                self.clean_temp_directory()
+            
+        else:
+            outputtext = "could not open the layer: " + str(layer) + "."
+            
+
         self.dlg.plainTextEdit.appendPlainText(outputtext)
         
         
@@ -358,7 +449,8 @@ class SuddenRasterTools:
             layer = str(self.dlg.comboBox.currentText())
             print_statistics_checked = self.dlg.print_statistics_checkbox.isChecked() # returns True if checked
             verbose_calculation_checked = self.dlg.verbose_calculation_checkbox.isChecked() # returns True if checked
-            self.raster_polygonise(layer, print_statistics_checked, verbose_calculation_checked)
+            keep_result_checked = self.dlg.keep_result_checkbox.isChecked() # returns True if checked
+            self.raster_polygonise(layer, print_statistics_checked, verbose_calculation_checked, keep_result_checked)
             
         #
         # This is the button that triggers the calculation

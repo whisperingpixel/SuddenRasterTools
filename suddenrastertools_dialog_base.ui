@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>654</width>
-    <height>482</height>
+    <height>472</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>440</y>
+     <x>0</x>
+     <y>430</y>
      <width>631</width>
      <height>32</height>
     </rect>
@@ -32,8 +32,8 @@
   <widget class="QGroupBox" name="out">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>230</y>
+     <x>0</x>
+     <y>220</y>
      <width>631</width>
      <height>201</height>
     </rect>
@@ -52,13 +52,13 @@
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QGroupBox" name="config">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>631</width>
-     <height>121</height>
+     <width>351</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="title">
@@ -108,24 +108,32 @@
      <rect>
       <x>100</x>
       <y>30</y>
-      <width>261</width>
+      <width>241</width>
       <height>21</height>
      </rect>
     </property>
    </widget>
-   <zorder>comboBox</zorder>
-   <zorder>verbose_calculation_checkbox</zorder>
-   <zorder>print_statistics_checkbox</zorder>
-   <zorder>label</zorder>
-   <zorder>comboBox</zorder>
+   <widget class="QCheckBox" name="keep_result_checkbox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Keep Result</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QGroupBox" name="calc">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>140</y>
-     <width>631</width>
-     <height>80</height>
+     <y>150</y>
+     <width>351</width>
+     <height>61</height>
     </rect>
    </property>
    <property name="title">
@@ -135,7 +143,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>20</y>
       <width>161</width>
       <height>28</height>
      </rect>
@@ -148,7 +156,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>30</y>
+      <y>20</y>
       <width>161</width>
       <height>28</height>
      </rect>
@@ -159,7 +167,7 @@
    </widget>
   </widget>
   <zorder>out</zorder>
-  <zorder>groupBox_2</zorder>
+  <zorder>config</zorder>
   <zorder>button_box</zorder>
   <zorder>calc</zorder>
  </widget>
